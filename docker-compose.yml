@@ -1,0 +1,44 @@
+# вказуємо версію
+version: '3.0'
+
+# вказуємо сервіси які будуть підніматися
+services:
+  main:
+    container_name: main
+    build:
+      context: .
+    env_file:
+      - .development.env
+    volumes:
+      # порівнюємо папки
+      - .:/app
+      - /app/node_modules
+    ports:
+      - 5000:5000
+      # для того щоб продебажити
+      - 9229:9229
+    command: npm run start:dev
+    # цей сервіс залежить від сервіса:
+    depends_on:
+      - postgres
+    restart: always
+
+  postgres:
+    container_name: postgres
+    image: postgres:16
+    env_file:
+      - .development.env
+    environment:
+      PG_DATA: /var/lib/postgresql/data
+    ports:
+      - 5432:5432
+      # вказуємо щоб не втрачати дані в середині бази данних
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:
+# далі в консолі збираємо докер docker-compose build
+# міняємо в .env localhost на postgres
+# в консолі запускаємо в контейнері docker-compose up
